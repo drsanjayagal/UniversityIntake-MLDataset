@@ -1,0 +1,223 @@
+# config.yaml
+dataset:
+  n_students: 100000
+  random_seed: 42
+
+output:
+  csv_path: "outputs/student_admission.csv"
+  parquet_path: "outputs/student_admission.parquet"
+  data_dict_path: "outputs/data_dictionary.md"
+  readme_path: "outputs/README.md"
+
+demographics:
+  gender:
+    Male: 0.48
+    Female: 0.48
+    Other: 0.04
+  age:
+    mean: 18.5
+    std: 1.5
+    min: 16
+    max: 25
+  category:
+    General: 0.40
+    OBC: 0.30
+    SC: 0.15
+    ST: 0.10
+    EWS: 0.05
+  state:
+    # 36 states/UTs with approximate weights (simplified to top 10 + others)
+    - name: "Uttar Pradesh"
+      weight: 0.16
+    - name: "Maharashtra"
+      weight: 0.09
+    - name: "Bihar"
+      weight: 0.08
+    - name: "West Bengal"
+      weight: 0.07
+    - name: "Madhya Pradesh"
+      weight: 0.06
+    - name: "Tamil Nadu"
+      weight: 0.06
+    - name: "Rajasthan"
+      weight: 0.06
+    - name: "Karnataka"
+      weight: 0.05
+    - name: "Gujarat"
+      weight: 0.05
+    - name: "Andhra Pradesh"
+      weight: 0.04
+    - name: "Other"
+      weight: 0.28
+  urban_rural:
+    Urban: 0.35
+    Rural: 0.65
+
+academic:
+  board_type:
+    CBSE: 0.40
+    ICSE: 0.10
+    State: 0.45
+    International: 0.05
+  class_10:
+    mean: 72
+    std: 14
+    min: 30
+    max: 100
+    board_effects:
+      CBSE: 2
+      ICSE: 3
+      State: -1
+      International: 5
+  class_12:
+    corr_with_10: 0.7
+    mean_offset: 0    # class_12 mean = class_10 mean + offset
+    std: 13
+    min: 30
+    max: 100
+    board_effects:
+      CBSE: 2
+      ICSE: 3
+      State: -1
+      International: 5
+  stream:
+    base_prob:
+      Science: 0.4
+      Commerce: 0.35
+      Arts: 0.25
+    # Adjust based on class_10 percentile (higher scores more likely Science)
+    class_10_thresholds:
+      low: 60
+      high: 80
+    subject_scores:
+      # [math_mean, science_mean, english_mean] by stream, plus std
+      Science: [75, 78, 70]
+      Commerce: [68, 60, 75]
+      Arts: [55, 58, 72]
+      std: [10, 12, 9]
+  medium_of_instruction:
+    English:
+      base_prob: 0.30
+      factors:
+        urban_rural_Urban: 0.6
+        board_International: 0.9
+        board_CBSE: 0.5
+    Regional:  # complementary
+  gap_year:
+    probs: [0.80, 0.15, 0.04, 0.01]  # 0,1,2,3 years
+
+entrance_aptitude:
+  entrance_exam:
+    weight_class12: 0.6
+    weight_socio: 0.2
+    noise_std: 8
+    min: 0
+    max: 100
+  aptitude:
+    weight_class12: 0.3
+    weight_logical: 0.3
+    weight_language: 0.2
+    noise_std: 7
+    min: 0
+    max: 100
+  logical_reasoning:
+    corr_with_math: 0.6
+    mean: 65
+    std: 15
+    min: 0
+    max: 100
+  language_proficiency:
+    corr_with_english: 0.7
+    mean: 70
+    std: 12
+    min: 0
+    max: 100
+
+socio_economic:
+  family_income:
+    categories: ["Low", "Lower-Middle", "Upper-Middle", "High"]
+    probs: [0.3, 0.4, 0.2, 0.1]
+    urban_effect: [0.2, 0.3, 0.3, 0.2]  # distribution shift for urban
+  parent_education:
+    levels: ["No formal", "Primary", "Secondary", "Graduate", "Postgraduate"]
+    probs: [0.1, 0.2, 0.4, 0.2, 0.1]
+    income_corr: 0.5  # correlation strength
+  first_generation:
+    base_prob: 0.2
+    edu_factor:
+      "No formal": 0.8
+      "Primary": 0.6
+      "Secondary": 0.3
+      "Graduate": 0.1
+      "Postgraduate": 0.05
+  internet_access:
+    base_prob: 0.5
+    urban_factor: 1.5   # multiplier for urban
+    income_factor:
+      "Low": 0.5
+      "Lower-Middle": 0.8
+      "Upper-Middle": 1.2
+      "High": 1.5
+  study_resources_index:
+    alpha: 2   # beta distribution parameters
+    beta: 2
+    income_effect: 0.3  # shift mean based on income
+
+behavioral:
+  self_learning_index:
+    alpha: 2
+    beta: 2
+  motivation_score:
+    mean: 6.5
+    std: 2
+    min: 1
+    max: 10
+    integer: true
+  attendance_likelihood:
+    alpha: 3
+    beta: 2
+
+target:
+  composite_weights:
+    class_10: 0.15
+    class_12: 0.20
+    entrance_exam: 0.20
+    aptitude: 0.15
+    logical_reasoning: 0.10
+    language_proficiency: 0.10
+    study_resources: 0.05
+    motivation: 0.05
+  level_thresholds: [30, 50, 70]  # percentiles for Beginner/Intermediate/Advanced/Exceptional
+  division_rules:
+    # level -> base division, with noise and socio-economic adjustments
+    Beginner:
+      base: "Remedial"
+      prob_remedial: 0.8
+      prob_regular: 0.2
+    Intermediate:
+      base: "Regular"
+      prob_regular: 0.7
+      prob_advanced: 0.3
+    Advanced:
+      base: "Advanced"
+      prob_advanced: 0.7
+      prob_honors: 0.3
+    Exceptional:
+      base: "Honors"
+      prob_honors: 0.9
+      prob_advanced: 0.1
+    # additional adjustments: first_generation, low income increase chance of Remedial
+  noise_level: 0.1  # probability to override base rule
+
+missingness:
+  mcar_rate: 0.01   # overall missing completely at random
+  mar_patterns:
+    - column: "family_income"
+      condition: "urban_rural=='Rural'"
+      missing_rate: 0.05
+    - column: "internet_access"
+      condition: "family_income=='Low'"
+      missing_rate: 0.03
+    - column: "parent_education"
+      condition: "first_generation_learner=='Yes'"
+      missing_rate: 0.02
