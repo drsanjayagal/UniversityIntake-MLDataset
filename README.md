@@ -7,6 +7,7 @@
 [![Dataset Size](https://img.shields.io/badge/Records-100%2C000+-brightgreen)](https://github.com/yourusername/UniversityIntake-MLDataset)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/yourusername/UniversityIntake-MLDataset)
 [![Made with Python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg?logo=python)](https://www.python.org/)
+[![Designed & Developed By](https://img.shields.io/badge/Designed%20%26%20Developed%20By-Dr.%20Sanjay%20Agal-blueviolet)](#)
 
 ---
 
