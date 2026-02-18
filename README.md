@@ -2,8 +2,6 @@
 # 🎓📊 **Synthetic Student Admission Dataset**  
 ### *For Machine Learning Research & Educational Use*  
 ### *Designed & Developed by Dr. Sanjay Agal*  
-#### *Professor, Artificial Intelligence and Data Science*  
-#### *Parul University, Vadodara, India*
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
